@@ -5,6 +5,4 @@
     <string name="name">Name</string>
     <string name="number">Number</string>
     <string name="email">Email</string>
-
-    <string name="number_helper">Enter your 10-digit phone number</string>
 </resources>

@@ -5,73 +5,88 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
+    android:orientation="vertical"
+    android:id="@+id/full_layout">
 
-    android:paddingLeft="30dp"
-    android:paddingRight="30dp"
-    android:paddingTop="30dp"
-    android:paddingBottom="30dp"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="@color/label_color"
+        android:elevation="2dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textColor="#ffffff"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="90dp"
+            android:textSize="35sp" />
+    </LinearLayout>
 
-    android:orientation="vertical">
-
-    <com.rey.material.widget.EditText
-        android:id="@+id/name_input"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:paddingTop="30dp"
+        android:paddingBottom="30dp"
+        android:orientation="vertical">
 
-        android:textSize="20dp"
-        android:textColor="@color/text_color"
-        material:et_dividerColor="@color/label_color"
-        material:et_dividerHeight="2dp"
+        <com.rey.material.widget.EditText
+            android:id="@+id/name_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
 
-        android:hint="@string/name"
-        android:textColorHint="@color/hint_color"
-        material:et_labelEnable="true"
-        material:et_labelTextSize="14sp"
-        material:et_labelTextColor="@color/label_color" />
+            android:textSize="20dp"
+            android:textColor="@color/text_color"
+            material:et_dividerColor="@color/label_color"
+            material:et_dividerHeight="2dp"
 
-    <com.rey.material.widget.EditText
-        android:id="@+id/number_input"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+            android:hint="@string/name"
+            android:textColorHint="@color/hint_color"
+            material:et_labelEnable="true"
+            material:et_labelTextSize="14sp"
+            material:et_labelTextColor="@color/label_color" />
 
-        android:textSize="20dp"
-        android:textColor="@color/text_color"
-        material:et_dividerColor="@color/label_color"
-        material:et_dividerHeight="2dp"
+        <com.rey.material.widget.EditText
+            android:id="@+id/number_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
 
-        android:hint="@string/number"
-        android:textColorHint="@color/hint_color"
-        material:et_labelEnable="true"
-        material:et_labelTextSize="14sp"
-        material:et_labelTextColor="@color/label_color"
+            android:textSize="20dp"
+            android:textColor="@color/text_color"
+            material:et_dividerColor="@color/label_color"
+            material:et_dividerHeight="2dp"
 
-        material:et_supportMode="charCounter"
-        material:et_supportMaxChars="10"
-        material:et_supportTextSize="14sp"
-        material:et_supportTextColor="@color/label_color"
-        material:et_supportTextErrorColor="@color/error_color"
-        material:et_dividerErrorColor="@color/error_color" />
+            android:hint="@string/number"
+            android:textColorHint="@color/hint_color"
+            material:et_labelEnable="true"
+            material:et_labelTextSize="14sp"
+            material:et_labelTextColor="@color/label_color"
 
-    <com.rey.material.widget.EditText
-        android:id="@+id/email_input"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+            material:et_supportMode="charCounter"
+            material:et_supportMaxChars="10"
+            material:et_supportTextSize="14sp"
+            material:et_supportTextColor="@color/label_color"
+            material:et_supportTextErrorColor="@color/error_color"
+            material:et_dividerErrorColor="@color/error_color" />
 
-        android:textSize="20dp"
-        android:textColor="@color/text_color"
-        material:et_dividerColor="@color/label_color"
-        material:et_dividerHeight="2dp"
+        <com.rey.material.widget.EditText
+            android:id="@+id/email_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
 
-        android:hint="@string/email"
-        android:textColorHint="@color/hint_color"
-        material:et_labelEnable="true"
-        material:et_labelTextSize="14sp"
-        material:et_labelTextColor="@color/label_color"
+            android:textSize="20dp"
+            android:textColor="@color/text_color"
+            material:et_dividerColor="@color/label_color"
+            material:et_dividerHeight="2dp"
 
-        material:et_supportMode="charCounter"
-        material:et_supportMaxChars="10"
-        material:et_supportTextSize="14sp"
-        material:et_supportTextColor="@color/label_color"
-        material:et_supportTextErrorColor="@color/error_color"
-        material:et_dividerErrorColor="@color/error_color" />
+            android:hint="@string/email"
+            android:textColorHint="@color/hint_color"
+            material:et_labelEnable="true"
+            material:et_labelTextSize="14sp"
+            material:et_labelTextColor="@color/label_color" />
+    </LinearLayout>
 </LinearLayout>
