@@ -5,13 +5,23 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.rey.material.widget.EditText;
+
 
 public class MainActivity extends ActionBarActivity {
+
+    private EditText mNameInput;
+    private EditText mNumberInput;
+    private EditText mEmailInput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mNameInput = (EditText) findViewById(R.id.name_input);
+        mNumberInput = (EditText) findViewById(R.id.number_input);
+        mEmailInput = (EditText) findViewById(R.id.email_input);
     }
 
     @Override
