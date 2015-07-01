@@ -123,20 +123,4 @@
                 material:et_labelTextColor="@color/label_color" />
         </LinearLayout>
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent">
-        <com.rey.material.widget.FloatingActionButton
-            android:id="@+id/done_changes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            material:fab_backgroundColor="@color/label_color"
-            material:fab_radius="30dp"
-            material:fab_elevation="3dp"
-            material:fab_iconSize="25dp"
-            material:fab_iconSrc="@drawable/ic_local_phone_black_24dp"
-            android:layout_margin="30dp"
-            android:layout_gravity="center"/>
-    </LinearLayout>
 </LinearLayout>

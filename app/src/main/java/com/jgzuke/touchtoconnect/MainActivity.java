@@ -1,31 +1,21 @@
 package com.jgzuke.touchtoconnect;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcEvent;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Vibrator;
-import android.provider.ContactsContract;
 import android.provider.Settings;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
@@ -34,11 +24,7 @@ import android.widget.Toast;
 import com.rey.material.widget.EditText;
 import com.rey.material.widget.FloatingActionButton;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.charset.Charset;
-
 
 public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessageCallback, NfcAdapter.OnNdefPushCompleteCallback {
 
@@ -56,7 +42,6 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     private EditText mNameInput;
     private EditText mNumberInput;
     private EditText mEmailInput;
-    private FloatingActionButton mDoneFAB;
 
     private Resources mRes;
     private SharedPreferences mPref;
@@ -78,7 +63,6 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         mNameInput = (EditText) findViewById(R.id.name_input);
         mNumberInput = (EditText) findViewById(R.id.number_input);
         mEmailInput = (EditText) findViewById(R.id.email_input);
-        mDoneFAB = (FloatingActionButton) findViewById(R.id.done_changes);
     }
 
     @Override
@@ -96,12 +80,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
             }
         });
 
-        mDoneFAB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveChanges();
-            }
-        });
+        restoreLastText();
 
         mTextWatcher = new TextWatcher() {
             @Override
@@ -110,7 +89,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override
             public void afterTextChanged(Editable s) {
-                setDataChanged();
+                saveChanges();
             }
         };
 
@@ -173,7 +152,6 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         setTextByPref(mNameInput, PREF_NAME);
         setTextByPref(mNumberInput, PREF_NUMBER);
         setTextByPref(mEmailInput, PREF_EMAIL);
-        mDoneFAB.setBackgroundColor(mRes.getColor(R.color.label_color));
     }
 
     private void setTextByPref(EditText textView, String PrefID) {
@@ -185,12 +163,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         editPref.putString(PREF_NAME, mNameInput.getText().toString());
         editPref.putString(PREF_NUMBER, mNumberInput.getText().toString());
         editPref.putString(PREF_EMAIL, mEmailInput.getText().toString());
-        mDoneFAB.setBackgroundColor(mRes.getColor(R.color.label_color));
         editPref.commit();
-    }
-
-    private void setDataChanged() {
-        mDoneFAB.setBackgroundColor(mRes.getColor(R.color.error_color));
     }
 
     private void setImageViewColor(int viewID, int color) {
