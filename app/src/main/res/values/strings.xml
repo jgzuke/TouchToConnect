@@ -5,4 +5,6 @@
     <string name="name">Name</string>
     <string name="number">Number</string>
     <string name="email">Email</string>
+
+    <string name="info_saved">Info has been saved</string>
 </resources>
