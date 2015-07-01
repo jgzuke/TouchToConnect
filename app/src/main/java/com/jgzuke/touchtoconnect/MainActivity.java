@@ -52,22 +52,30 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     private EditText mNameInput;
     private EditText mNumberInput;
     private EditText mEmailInput;
-
     private FloatingActionButton mDoneFAB;
 
     private Resources mRes;
     private SharedPreferences mPref;
-
     private TextWatcher mTextWatcher;
-
     private NfcAdapter mNfcAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mNameInput = (EditText) findViewById(R.id.name_input);
+        mNumberInput = (EditText) findViewById(R.id.number_input);
+        mEmailInput = (EditText) findViewById(R.id.email_input);
+        mDoneFAB = (FloatingActionButton) findViewById(R.id.done_changes);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         mRes = getResources();
         mPref = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (mNfcAdapter == null) {
             toast(R.string.beam_unavaliable);
@@ -77,11 +85,6 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
             mNfcAdapter.setNdefPushMessageCallback(this, this);
             mNfcAdapter.setOnNdefPushCompleteCallback(this, this);
         }
-
-        mNameInput = (EditText) findViewById(R.id.name_input);
-        mNumberInput = (EditText) findViewById(R.id.number_input);
-        mEmailInput = (EditText) findViewById(R.id.email_input);
-        mDoneFAB = (FloatingActionButton) findViewById(R.id.done_changes);
 
         //hides keyboard when you click off of an edittext
         findViewById(R.id.full_layout).setOnTouchListener(new View.OnTouchListener() {
@@ -123,7 +126,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
 
     @Override
     public NdefMessage createNdefMessage(NfcEvent event) {
-        NdefRecord record = null;
+        NdefRecord record;
         String contactCard = generateContactCard();
         byte[] uriField = contactCard.getBytes(Charset.forName("US-ASCII"));
         byte[] payload = new byte[uriField.length + 1];
@@ -139,13 +142,38 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     }
 
     private String generateContactCard() {
-        return  "BEGIN:VCARD\n" +
-                "VERSION:2.1\n" +
-                "N:;Jasontesting;;;\n" +
-                "FN:Jasontesting\n" +
-                "TEL;CELL:2893356116\n" +
-                "TEL;CELL:2893356116\n" +
-                "END:VCARD";
+        String contactCard = "BEGIN:VCARD" + "\n" + "VERSION:2.1" + "\n";
+        contactCard += generateContactCardData();
+        contactCard += "END:VCARD";
+        return contactCard;
+    }
+
+    private String generateContactCardData() {
+        String contactCardInfo = "";
+        if(mPref.contains(PREF_NAME)) {
+            String name = mPref.getString(PREF_NAME, "");
+            if(name != null && !name.isEmpty()) {
+                contactCardInfo += "N:;" + name + ";;;" + "\n";
+                contactCardInfo += "FN:" + name + "\n";
+            }
+        }
+        if(mPref.contains(PREF_NUMBER)) {
+            String number = mPref.getString(PREF_NUMBER, "");
+            if(number != null && !number.isEmpty()) {
+                contactCardInfo += "TEL;CELL:" + number + "\n";
+            }
+        }
+        if(mPref.contains(PREF_EMAIL)) {
+            String email = mPref.getString(PREF_EMAIL, "");
+            if(email != null && !email.isEmpty()) {
+                contactCardInfo += "EMAIL;HOME:" + email + "\n";
+            }
+        }
+        if(contactCardInfo.isEmpty()) {
+            contactCardInfo += "N:;" + "New Contact" + ";;;" + "\n";
+            contactCardInfo += "FN:" + "New Contact" + "\n";
+        }
+        return contactCardInfo;
     }
 
     private final Handler mHandler = new Handler()
@@ -161,13 +189,13 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
 
     private void restoreLastText() {
         if(mPref.contains(PREF_NAME)) {
-            mNameInput.setText(mPref.getString(PREF_NAME, "Name"));
+            mNameInput.setText(mPref.getString(PREF_NAME, ""));
         }
         if(mPref.contains(PREF_NUMBER)) {
-            mNumberInput.setText(mPref.getString(PREF_NUMBER, "Number"));
+            mNumberInput.setText(mPref.getString(PREF_NUMBER, ""));
         }
         if(mPref.contains(PREF_EMAIL)) {
-            mEmailInput.setText(mPref.getString(PREF_EMAIL, "Email"));
+            mEmailInput.setText(mPref.getString(PREF_EMAIL, ""));
         }
         mDoneFAB.setBackgroundColor(mRes.getColor(R.color.label_color));
     }
