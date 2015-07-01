@@ -49,6 +49,10 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
 
     public static final int BEAM_COMPLETE = 1;
 
+    public static final String CARD_PRE = "BEGIN:VCARD\nVERSION:2.1\n";
+    public static final String CARD_END = "END:VCARD";
+    public static final String CARD_DEFAULT_DATA = "N:;New Contact;;;\n";
+
     private EditText mNameInput;
     private EditText mNumberInput;
     private EditText mEmailInput;
@@ -126,13 +130,10 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
 
     @Override
     public NdefMessage createNdefMessage(NfcEvent event) {
-        NdefRecord record;
-        String contactCard = generateContactCard();
-        byte[] uriField = contactCard.getBytes(Charset.forName("US-ASCII"));
+        byte[] uriField = generateContactCard().getBytes(Charset.forName("US-ASCII"));
         byte[] payload = new byte[uriField.length + 1];
         System.arraycopy(uriField, 0, payload, 1, uriField.length);
-        record = new NdefRecord(NdefRecord.TNF_MIME_MEDIA, "text/vcard".getBytes(), new byte[0], payload);
-
+        NdefRecord record = new NdefRecord(NdefRecord.TNF_MIME_MEDIA, "text/vcard".getBytes(), new byte[0], payload);
         return new NdefMessage(new NdefRecord[] {record});
     }
 
@@ -142,38 +143,21 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     }
 
     private String generateContactCard() {
-        String contactCard = "BEGIN:VCARD" + "\n" + "VERSION:2.1" + "\n";
-        contactCard += generateContactCardData();
-        contactCard += "END:VCARD";
-        return contactCard;
+        return CARD_PRE + generateContactCardData() + CARD_END;
     }
 
     private String generateContactCardData() {
-        String contactCardInfo = "";
-        if(mPref.contains(PREF_NAME)) {
-            String name = mPref.getString(PREF_NAME, "");
-            if(name != null && !name.isEmpty()) {
-                contactCardInfo += "N:;" + name + ";;;" + "\n";
-                contactCardInfo += "FN:" + name + "\n";
-            }
-        }
-        if(mPref.contains(PREF_NUMBER)) {
-            String number = mPref.getString(PREF_NUMBER, "");
-            if(number != null && !number.isEmpty()) {
-                contactCardInfo += "TEL;CELL:" + number + "\n";
-            }
-        }
-        if(mPref.contains(PREF_EMAIL)) {
-            String email = mPref.getString(PREF_EMAIL, "");
-            if(email != null && !email.isEmpty()) {
-                contactCardInfo += "EMAIL;HOME:" + email + "\n";
-            }
-        }
-        if(contactCardInfo.isEmpty()) {
-            contactCardInfo += "N:;" + "New Contact" + ";;;" + "\n";
-            contactCardInfo += "FN:" + "New Contact" + "\n";
-        }
-        return contactCardInfo;
+        String contactData = appendPrefToString("", "N:;", PREF_NAME, ";;;\n");
+        contactData = appendPrefToString(contactData, "TEL;CELL:", PREF_NUMBER, "\n");
+        contactData = appendPrefToString(contactData, "EMAIL;HOME:", PREF_EMAIL, "\n");
+        return contactData.isEmpty()? CARD_DEFAULT_DATA : contactData;
+    }
+
+    private String appendPrefToString(String text, String pre, String PREF_ID, String end) {
+        if(!mPref.contains(PREF_ID)) return "";
+        String data = mPref.getString(PREF_ID, "");
+        if(data == null || data.isEmpty()) return "";
+        return text + pre + data + end;
     }
 
     private final Handler mHandler = new Handler()
@@ -188,16 +172,14 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     };
 
     private void restoreLastText() {
-        if(mPref.contains(PREF_NAME)) {
-            mNameInput.setText(mPref.getString(PREF_NAME, ""));
-        }
-        if(mPref.contains(PREF_NUMBER)) {
-            mNumberInput.setText(mPref.getString(PREF_NUMBER, ""));
-        }
-        if(mPref.contains(PREF_EMAIL)) {
-            mEmailInput.setText(mPref.getString(PREF_EMAIL, ""));
-        }
+        setTextByPref(mNameInput, PREF_NAME);
+        setTextByPref(mNumberInput, PREF_NUMBER);
+        setTextByPref(mEmailInput, PREF_EMAIL);
         mDoneFAB.setBackgroundColor(mRes.getColor(R.color.label_color));
+    }
+
+    private void setTextByPref(EditText textView, String PrefID) {
+        if(mPref.contains(PrefID)) textView.setText(mPref.getString(PrefID, ""));
     }
 
     private void saveChanges() {
