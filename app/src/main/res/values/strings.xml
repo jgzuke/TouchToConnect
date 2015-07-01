@@ -6,7 +6,6 @@
     <string name="number">Number</string>
     <string name="email">Email</string>
 
-    <string name="info_saved">Info has been saved</string>
     <string name="beam_complete">Beam has been completed</string>
 
     <string name="beam_unavaliable">Beam is unavaliable</string>

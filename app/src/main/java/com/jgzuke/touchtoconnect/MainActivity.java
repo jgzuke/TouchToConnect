@@ -183,15 +183,11 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     }
 
     private void saveChanges() {
-        String name = mNameInput.getText().toString();
-        String number = mNumberInput.getText().toString();
-        String email = mEmailInput.getText().toString();
         SharedPreferences.Editor editPref = mPref.edit();
-        editPref.putString(PREF_NAME, name);
-        editPref.putString(PREF_NUMBER, number);
-        editPref.putString(PREF_EMAIL, email);
+        editPref.putString(PREF_NAME, mNameInput.getText().toString());
+        editPref.putString(PREF_NUMBER, mNumberInput.getText().toString());
+        editPref.putString(PREF_EMAIL, mEmailInput.getText().toString());
         mDoneFAB.setBackgroundColor(mRes.getColor(R.color.label_color));
-        toast(R.string.info_saved);
         editPref.commit();
     }
 
@@ -223,7 +219,6 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
