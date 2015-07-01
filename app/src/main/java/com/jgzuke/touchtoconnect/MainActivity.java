@@ -65,6 +65,14 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         mRes = getResources();
         mPref = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (mNfcAdapter == null) {
+            toast(R.string.beam_unavaliable);
+        } else if (!mNfcAdapter.isEnabled()) {
+            toast(R.string.beam_disabled);
+        } else {
+            mNfcAdapter.setNdefPushMessageCallback(this, this);
+            mNfcAdapter.setOnNdefPushCompleteCallback(this, this);
+        }
 
         mNameInput = (EditText) findViewById(R.id.name_input);
         mNumberInput = (EditText) findViewById(R.id.number_input);
