@@ -138,7 +138,8 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         String contactData = appendPrefToString("", "N:;", PREF_NAME, ";;;\n");
         contactData = appendPrefToString(contactData, "TEL;CELL:", PREF_NUMBER, "\n");
         contactData = appendPrefToString(contactData, "EMAIL;HOME:", PREF_EMAIL, "\n");
-        return contactData.isEmpty()? CARD_DEFAULT_DATA : contactData;
+        if(contactData.isEmpty()) contactData = CARD_DEFAULT_DATA;
+        return contactData;
     }
 
     private String appendPrefToString(String text, String pre, String PREF_ID, String end) {
