@@ -63,6 +63,13 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     private TextWatcher mTextWatcher;
     private NfcAdapter mNfcAdapter;
 
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message message) {
+            if(message.what == BEAM_COMPLETE) toast(R.string.beam_complete);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,23 +86,13 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         super.onResume();
         mRes = getResources();
         mPref = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
-
-        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        if (mNfcAdapter == null) {
-            toast(R.string.beam_unavaliable);
-        } else if (!mNfcAdapter.isEnabled()) {
-            toast(R.string.beam_disabled);
-        } else {
-            mNfcAdapter.setNdefPushMessageCallback(this, this);
-            mNfcAdapter.setOnNdefPushCompleteCallback(this, this);
-        }
+        setNFCAdapter();
 
         //hides keyboard when you click off of an edittext
-        findViewById(R.id.full_layout).setOnTouchListener(new View.OnTouchListener() {
+        findViewById(R.id.full_layout).setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent e) {
+            public void onClick(View v) {
                 hideKeyboard();
-                return false;
             }
         });
 
@@ -126,6 +123,18 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         mEmailInput.addTextChangedListener(mTextWatcher);
 
         restoreLastText();
+    }
+
+    private void setNFCAdapter() {
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (mNfcAdapter == null) {
+            toast(R.string.beam_unavaliable);
+        } else if (!mNfcAdapter.isEnabled()) {
+            toast(R.string.beam_disabled);
+        } else {
+            mNfcAdapter.setNdefPushMessageCallback(this, this);
+            mNfcAdapter.setOnNdefPushCompleteCallback(this, this);
+        }
     }
 
     @Override
@@ -160,17 +169,6 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         return text + pre + data + end;
     }
 
-    private final Handler mHandler = new Handler()
-    {
-        @Override
-        public void handleMessage(Message message)
-        {
-            if(message.what == BEAM_COMPLETE) {
-                toast(R.string.beam_complete);
-            }
-        }
-    };
-
     private void restoreLastText() {
         setTextByPref(mNameInput, PREF_NAME);
         setTextByPref(mNumberInput, PREF_NUMBER);
@@ -194,9 +192,6 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     private void setDataChanged() {
         mDoneFAB.setBackgroundColor(mRes.getColor(R.color.error_color));
     }
-
-
-    // ****UTILITY METHODS****
 
     private void setImageViewColor(int viewID, int color) {
         ((ImageView) findViewById(viewID)).setColorFilter(color);
