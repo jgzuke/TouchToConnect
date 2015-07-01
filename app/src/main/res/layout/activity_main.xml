@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:background="@color/label_color"
-        android:elevation="2dp">
+        android:elevation="5dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -27,66 +27,99 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="30dp"
+        android:paddingLeft="10dp"
         android:paddingRight="30dp"
         android:paddingTop="30dp"
         android:paddingBottom="30dp"
         android:orientation="vertical">
 
-        <com.rey.material.widget.EditText
-            android:id="@+id/name_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/name_input_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:src="@drawable/ic_person_black_24dp"
+                android:gravity="center"/>
+            <com.rey.material.widget.EditText
+                android:id="@+id/name_input"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
 
-            android:textSize="20dp"
-            android:textColor="@color/text_color"
-            material:et_dividerColor="@color/label_color"
-            material:et_dividerHeight="2dp"
+                android:textSize="20dp"
+                android:textColor="@color/text_color"
+                material:et_dividerColor="@color/label_color"
+                material:et_dividerHeight="2dp"
 
-            android:hint="@string/name"
-            android:textColorHint="@color/hint_color"
-            material:et_labelEnable="true"
-            material:et_labelTextSize="14sp"
-            material:et_labelTextColor="@color/label_color" />
+                android:hint="@string/name"
+                android:textColorHint="@color/hint_color"
+                material:et_labelEnable="true"
+                material:et_labelTextSize="14sp"
+                material:et_labelTextColor="@color/label_color" />
+        </LinearLayout>
 
-        <com.rey.material.widget.EditText
-            android:id="@+id/number_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/number_input_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:src="@drawable/ic_local_phone_black_24dp"
+                android:gravity="center"/>
+            <com.rey.material.widget.EditText
+                android:id="@+id/number_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
 
-            android:textSize="20dp"
-            android:textColor="@color/text_color"
-            material:et_dividerColor="@color/label_color"
-            material:et_dividerHeight="2dp"
+                android:textSize="20dp"
+                android:textColor="@color/text_color"
+                material:et_dividerColor="@color/label_color"
+                material:et_dividerHeight="2dp"
 
-            android:hint="@string/number"
-            android:textColorHint="@color/hint_color"
-            material:et_labelEnable="true"
-            material:et_labelTextSize="14sp"
-            material:et_labelTextColor="@color/label_color"
+                android:hint="@string/number"
+                android:textColorHint="@color/hint_color"
+                material:et_labelEnable="true"
+                material:et_labelTextSize="14sp"
+                material:et_labelTextColor="@color/label_color"
 
-            material:et_supportMode="charCounter"
-            material:et_supportMaxChars="10"
-            material:et_supportTextSize="14sp"
-            material:et_supportTextColor="@color/label_color"
-            material:et_supportTextErrorColor="@color/error_color"
-            material:et_dividerErrorColor="@color/error_color" />
+                material:et_supportMode="charCounter"
+                material:et_supportMaxChars="10"
+                material:et_supportTextSize="14sp"
+                material:et_supportTextColor="@color/label_color"
+                material:et_supportTextErrorColor="@color/error_color"
+                material:et_dividerErrorColor="@color/error_color" />
+        </LinearLayout>
 
-        <com.rey.material.widget.EditText
-            android:id="@+id/email_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/email_input_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:src="@drawable/ic_local_post_office_black_24dp"
+                android:gravity="center"/>
+            <com.rey.material.widget.EditText
+                android:id="@+id/email_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
 
-            android:textSize="20dp"
-            android:textColor="@color/text_color"
-            material:et_dividerColor="@color/label_color"
-            material:et_dividerHeight="2dp"
+                android:textSize="20dp"
+                android:textColor="@color/text_color"
+                material:et_dividerColor="@color/label_color"
+                material:et_dividerHeight="2dp"
 
-            android:hint="@string/email"
-            android:textColorHint="@color/hint_color"
-            material:et_labelEnable="true"
-            material:et_labelTextSize="14sp"
-            material:et_labelTextColor="@color/label_color" />
+                android:hint="@string/email"
+                android:textColorHint="@color/hint_color"
+                material:et_labelEnable="true"
+                material:et_labelTextSize="14sp"
+                material:et_labelTextColor="@color/label_color" />
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

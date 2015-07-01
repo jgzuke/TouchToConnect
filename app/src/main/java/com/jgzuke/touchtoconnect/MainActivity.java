@@ -1,6 +1,7 @@
 package com.jgzuke.touchtoconnect;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -8,6 +9,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
 
 import com.rey.material.widget.EditText;
 
@@ -17,11 +19,13 @@ public class MainActivity extends Activity {
     private EditText mNameInput;
     private EditText mNumberInput;
     private EditText mEmailInput;
+    private Resources res;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        res = getResources();
 
         //hides keyboard when you click off an edittext
         findViewById(R.id.full_layout).setOnTouchListener(new View.OnTouchListener() {
@@ -31,10 +35,17 @@ public class MainActivity extends Activity {
                 return false;
             }
         });
+        setImageViewColor(R.id.name_input_icon, res.getColor(R.color.label_color));
+        setImageViewColor(R.id.number_input_icon, res.getColor(R.color.label_color));
+        setImageViewColor(R.id.email_input_icon, res.getColor(R.color.label_color));
 
         mNameInput = (EditText) findViewById(R.id.name_input);
         mNumberInput = (EditText) findViewById(R.id.number_input);
         mEmailInput = (EditText) findViewById(R.id.email_input);
+    }
+
+    private void setImageViewColor(int viewID, int color) {
+        ((ImageView) findViewById(viewID)).setColorFilter(color);
     }
 
     private void hideKeyboard() {
