@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -19,6 +22,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -30,6 +34,9 @@ import android.widget.Toast;
 import com.rey.material.widget.EditText;
 import com.rey.material.widget.FloatingActionButton;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.charset.Charset;
 
 
@@ -39,11 +46,8 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     public static final String PREF_NAME = "touch-connect-name";
     public static final String PREF_NUMBER = "touch-connect-number";
     public static final String PREF_EMAIL = "touch-connect-email";
-    public static final String PREF_CONTACT = "touch-connect-contact";
 
     public static final int BEAM_COMPLETE = 1;
-
-    public static final int VIBRATE_LENGTH = 1000;
 
     private EditText mNameInput;
     private EditText mNumberInput;
@@ -120,12 +124,28 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     @Override
     public NdefMessage createNdefMessage(NfcEvent event) {
         NdefRecord record = null;
+        String contactCard = generateContactCard();
+        byte[] uriField = contactCard.getBytes(Charset.forName("US-ASCII"));
+        byte[] payload = new byte[uriField.length + 1];
+        System.arraycopy(uriField, 0, payload, 1, uriField.length);
+        record = new NdefRecord(NdefRecord.TNF_MIME_MEDIA, "text/vcard".getBytes(), new byte[0], payload);
+
         return new NdefMessage(new NdefRecord[] {record});
     }
 
     @Override
     public void onNdefPushComplete(NfcEvent event) {
         mHandler.obtainMessage(BEAM_COMPLETE).sendToTarget();
+    }
+
+    private String generateContactCard() {
+        return  "BEGIN:VCARD\n" +
+                "VERSION:2.1\n" +
+                "N:;Jasontesting;;;\n" +
+                "FN:Jasontesting\n" +
+                "TEL;CELL:2893356116\n" +
+                "TEL;CELL:2893356116\n" +
+                "END:VCARD";
     }
 
     private final Handler mHandler = new Handler()
@@ -162,12 +182,6 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         editPref.putString(PREF_EMAIL, email);
         mDoneFAB.setBackgroundColor(mRes.getColor(R.color.label_color));
         toast(R.string.info_saved);
-
-        Uri uri = Uri.fromParts("tel", number, "");
-        startActivity(new Intent(ContactsContract.Intents.SHOW_OR_CREATE_CONTACT, uri));
-
-        editPref.putString(PREF_CONTACT, email);
-
         editPref.commit();
     }
 
