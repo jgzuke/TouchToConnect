@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -23,8 +24,12 @@ import android.widget.Toast;
 
 import com.rey.material.widget.EditText;
 import com.rey.material.widget.FloatingActionButton;
+import com.soundcloud.android.crop.Crop;
 
+import java.io.File;
 import java.nio.charset.Charset;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessageCallback, NfcAdapter.OnNdefPushCompleteCallback {
 
@@ -32,6 +37,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     public static final String PREF_NAME = "touch-connect-name";
     public static final String PREF_NUMBER = "touch-connect-number";
     public static final String PREF_EMAIL = "touch-connect-email";
+    public static final String PREF_PHOTO_URI = "touch-connect-photouri";
 
     public static final int BEAM_COMPLETE = 1;
 
@@ -39,9 +45,14 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     public static final String CARD_END = "END:VCARD";
     public static final String CARD_DEFAULT_DATA = "N:;New Contact;;;\n";
 
+    public static final String PHOTO_FILE = "touch-connect-photo";
+
     private EditText mNameInput;
     private EditText mNumberInput;
     private EditText mEmailInput;
+    private CircleImageView mProfilePhoto;
+
+    private Uri mPhotoUri;
 
     private Resources mRes;
     private SharedPreferences mPref;
@@ -63,6 +74,8 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         mNameInput = (EditText) findViewById(R.id.name_input);
         mNumberInput = (EditText) findViewById(R.id.number_input);
         mEmailInput = (EditText) findViewById(R.id.email_input);
+
+        mProfilePhoto = (CircleImageView) findViewById(R.id.profile_image);
     }
 
     @Override
@@ -82,6 +95,13 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
 
         int colorPrimary = mRes.getColor(R.color.label_color);
         restoreLastText();
+
+        mProfilePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectPhoto();
+            }
+        });
 
         mTextWatcher = new TextWatcher() {
             @Override
@@ -103,6 +123,35 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         mEmailInput.addTextChangedListener(mTextWatcher);
 
         restoreLastText();
+    }
+
+    private void selectPhoto() {
+        Crop.pickImage(this);
+    }
+
+    private void beginCrop(Uri source) {
+        Uri destination = Uri.fromFile(new File(getCacheDir(), PHOTO_FILE));
+        Crop.of(source, destination).asSquare().start(this);
+    }
+
+    private void endCrop(int resultCode, Intent result) {
+        if (resultCode == RESULT_OK) {
+            mProfilePhoto.setImageURI(null);
+            mPhotoUri = Crop.getOutput(result);
+            mProfilePhoto.setImageURI(mPhotoUri);
+            saveChanges();
+        } else if (resultCode == Crop.RESULT_ERROR) {
+            Toast.makeText(this, Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent result) {
+        if (requestCode == Crop.REQUEST_PICK && resultCode == RESULT_OK) {
+            beginCrop(result.getData());
+        } else if (requestCode == Crop.REQUEST_CROP) {
+            endCrop(resultCode, result);
+        }
     }
 
     private void setNFCAdapter() {
@@ -154,6 +203,10 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         setTextByPref(mNameInput, PREF_NAME);
         setTextByPref(mNumberInput, PREF_NUMBER);
         setTextByPref(mEmailInput, PREF_EMAIL);
+        if(mPref.contains(PREF_PHOTO_URI)) {
+            mPhotoUri = Uri.parse(mPref.getString(PREF_PHOTO_URI, ""));
+            mProfilePhoto.setImageURI(mPhotoUri);
+        }
     }
 
     private void setTextByPref(EditText textView, String PrefID) {
@@ -165,6 +218,9 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         editPref.putString(PREF_NAME, mNameInput.getText().toString());
         editPref.putString(PREF_NUMBER, mNumberInput.getText().toString());
         editPref.putString(PREF_EMAIL, mEmailInput.getText().toString());
+        if(mPhotoUri != null) {
+            editPref.putString(PREF_PHOTO_URI, mPhotoUri.toString());
+        }
         editPref.commit();
     }
 

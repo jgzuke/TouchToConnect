@@ -13,15 +13,13 @@
         android:layout_gravity="center_horizontal"
         android:orientation="vertical">
 
-        <com.rey.material.widget.FloatingActionButton
-            android:id="@+id/take_photo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            material:fab_backgroundColor="@color/label_color"
-            material:fab_radius="40dp"
-            material:fab_elevation="3dp"
-            material:fab_iconSize="30dp"
-            material:fab_iconSrc="@drawable/ic_insert_photo_white_48dp"
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/profile_photo_default"
+            material:border_width="2dp"
+            material:border_color="@color/label_color"
             android:layout_margin="10dp"
             android:layout_gravity="center"/>
 
