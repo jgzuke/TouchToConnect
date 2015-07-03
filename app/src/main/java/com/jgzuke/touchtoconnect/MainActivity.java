@@ -137,6 +137,11 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         mNumberInput.addTextChangedListener(mTextWatcher);
         mEmailInput.addTextChangedListener(mTextWatcher);
 
+        if(mPref.contains(PREF_PHOTO_URI)) {
+            mCheckPicture.setVisibility(View.VISIBLE);
+        } else {
+            mCheckPicture.setVisibility(View.GONE);
+        }
         mCheckPicture.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
