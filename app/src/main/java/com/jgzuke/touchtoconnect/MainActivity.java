@@ -19,7 +19,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,6 +37,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import me.drakeet.materialdialog.MaterialDialog;
 
 public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessageCallback, NfcAdapter.OnNdefPushCompleteCallback {
 
@@ -46,6 +46,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     public static final String PREF_NUMBER = "touch-connect-number";
     public static final String PREF_EMAIL = "touch-connect-email";
     public static final String PREF_PHOTO_URI = "touch-connect-photouri";
+    public static final String PREF_PHOTO_QUALITY = "touch-connect-photo_quality";
 
     public static final int BEAM_COMPLETE = 1;
 
@@ -54,8 +55,6 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     public static final String CARD_DEFAULT_DATA = "N:;New Contact;;;\n";
 
     public static final String PHOTO_FILE = "touch-connect-photo";
-
-    public static final int profileImageSize = 96;
 
     private EditText mNameInput;
     private EditText mNumberInput;
@@ -109,7 +108,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         mProfilePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectPhoto();
+                selectPhotoDialog();
             }
         });
 
@@ -140,6 +139,38 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.setStatusBarColor(mRes.getColor(R.color.status_color));
         }
+    }
+
+    private void selectPhotoDialog() {
+        View dialogView = getLayoutInflater().inflate(R.layout.photo_quality_dialog, null);
+
+        final MaterialDialog mMaterialDialog = new MaterialDialog(this);
+        mMaterialDialog.setTitle("Photo Quality").setContentView(dialogView).show();
+
+        dialogView.findViewById(R.id.quality_low).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setImageSize(96);
+                mMaterialDialog.dismiss();
+                selectPhoto();
+            }
+        });
+        dialogView.findViewById(R.id.quality_medium).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setImageSize(128);
+                mMaterialDialog.dismiss();
+                selectPhoto();
+            }
+        });
+        dialogView.findViewById(R.id.quality_high).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setImageSize(192);
+                mMaterialDialog.dismiss();
+                selectPhoto();
+            }
+        });
     }
 
     private void selectPhoto() {
@@ -237,8 +268,9 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
 
     private Bitmap getScaledBitmap(Bitmap original) {
         int originalSize = original.getWidth();
-        if(originalSize <= profileImageSize) return original;
-        return Bitmap.createScaledBitmap(original, profileImageSize, profileImageSize, false);
+        int imageSize = mPref.getInt(PREF_PHOTO_QUALITY, 128);
+        if(originalSize <= imageSize) return original;
+        return Bitmap.createScaledBitmap(original, imageSize, imageSize, false);
     }
 
     private String appendPrefToString(String text, String pre, String PREF_ID, String end) {
@@ -260,6 +292,12 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
 
     private void setTextByPref(EditText textView, String PrefID) {
         if(mPref.contains(PrefID)) textView.setText(mPref.getString(PrefID, ""));
+    }
+
+    private void setImageSize(int newImageSize) {
+        SharedPreferences.Editor editPref = mPref.edit();
+        editPref.putInt(PREF_PHOTO_QUALITY, newImageSize);
+        editPref.commit();
     }
 
     private void saveChanges() {
