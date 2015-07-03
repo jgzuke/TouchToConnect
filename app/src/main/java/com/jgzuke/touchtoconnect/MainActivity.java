@@ -10,6 +10,7 @@ import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcEvent;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
@@ -54,7 +55,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
 
     public static final String PHOTO_FILE = "touch-connect-photo";
 
-    public static final  int profileImageSize = 128;
+    public static final int profileImageSize = 96;
 
     private EditText mNameInput;
     private EditText mNumberInput;
@@ -105,13 +106,12 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         int colorPrimary = mRes.getColor(R.color.label_color);
         restoreLastText();
 
-        mProfilePhoto.setVisibility(View.GONE);
-        /*mProfilePhoto.setOnClickListener(new View.OnClickListener() {
+        mProfilePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectPhoto();
             }
-        });*/
+        });
 
         mTextWatcher = new TextWatcher() {
             @Override
@@ -134,10 +134,12 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
 
         restoreLastText();
 
-        Window window = getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.setStatusBarColor(mRes.getColor(R.color.status_color));
+        if(Build.VERSION.SDK_INT >= 21) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(mRes.getColor(R.color.status_color));
+        }
     }
 
     private void selectPhoto() {
@@ -206,7 +208,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         String contactData = appendPrefToString("", "N:;", PREF_NAME, ";;;\n");
         contactData = appendPrefToString(contactData, "TEL;CELL:", PREF_NUMBER, "\n");
         contactData = appendPrefToString(contactData, "EMAIL;HOME:", PREF_EMAIL, "\n");
-        //contactData += encodeSavedUriTobase64();
+        contactData += encodeSavedUriTobase64();
         if(contactData.isEmpty()) contactData = CARD_DEFAULT_DATA;
         return contactData;
     }
@@ -250,10 +252,10 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         setTextByPref(mNameInput, PREF_NAME);
         setTextByPref(mNumberInput, PREF_NUMBER);
         setTextByPref(mEmailInput, PREF_EMAIL);
-        /*if(mPref.contains(PREF_PHOTO_URI)) {
+        if(mPref.contains(PREF_PHOTO_URI)) {
             mPhotoUri = Uri.parse(mPref.getString(PREF_PHOTO_URI, ""));
             mProfilePhoto.setImageURI(mPhotoUri);
-        }*/
+        }
     }
 
     private void setTextByPref(EditText textView, String PrefID) {
@@ -265,9 +267,9 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         editPref.putString(PREF_NAME, mNameInput.getText().toString());
         editPref.putString(PREF_NUMBER, mNumberInput.getText().toString());
         editPref.putString(PREF_EMAIL, mEmailInput.getText().toString());
-        /*if(mPhotoUri != null) {
+        if(mPhotoUri != null) {
             editPref.putString(PREF_PHOTO_URI, mPhotoUri.toString());
-        }*/
+        }
         editPref.commit();
     }
 
