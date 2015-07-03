@@ -176,17 +176,11 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     @Override
     public NdefMessage createNdefMessage(NfcEvent event) {
         byte[] uriField = generateContactCard().getBytes(Charset.forName("US-ASCII"));
-        Log.e("myid", "test0");
         byte[] payload = new byte[uriField.length + 1];
-        Log.e("myid", "test1");
         System.arraycopy(uriField, 0, payload, 1, uriField.length);
-        Log.e("myid", "test2");
         NdefRecord record = new NdefRecord(NdefRecord.TNF_MIME_MEDIA, "text/vcard".getBytes(), new byte[0], payload);
-        Log.e("myid", "test3");
         NdefRecord[] ndefRecord = new NdefRecord[] {record};
-        Log.e("myid", "test4");
         NdefMessage ndefMessage = new NdefMessage(ndefRecord);
-        Log.e("myid", "test5");
         return ndefMessage;
     }
 
@@ -197,7 +191,6 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
 
     private String generateContactCard() {
         String contactCard = CARD_PRE + generateContactCardData() + CARD_END;
-        Log.e("myid", "gotheretoo");
         return contactCard;
     }
 
@@ -206,7 +199,6 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         contactData = appendPrefToString(contactData, "TEL;CELL:", PREF_NUMBER, "\n");
         contactData = appendPrefToString(contactData, "EMAIL;HOME:", PREF_EMAIL, "\n");
         contactData += encodeSavedUriTobase64();
-        Log.e("myid", "gothere");
         if(contactData.isEmpty()) contactData = CARD_DEFAULT_DATA;
         return contactData;
     }
@@ -226,7 +218,6 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
             image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             byte[] b = baos.toByteArray();
             String base64EncodedImage = Base64.encodeToString(b, Base64.DEFAULT);
-            Log.e("myid", base64EncodedImage);
             return "PHOTO;ENCODING=BASE64;JPEG:".concat(base64EncodedImage).concat("\n");
         } catch (IOException e) {
             e.printStackTrace();
