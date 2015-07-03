@@ -283,9 +283,9 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     }
 
     private String appendPrefToString(String text, String pre, String PREF_ID, String end) {
-        if(!mPref.contains(PREF_ID)) return "";
+        if(!mPref.contains(PREF_ID)) return text;
         String data = mPref.getString(PREF_ID, "");
-        if(data == null || data.isEmpty()) return "";
+        if(data == null || data.isEmpty()) return text;
         return text + pre + data + end;
     }
 
