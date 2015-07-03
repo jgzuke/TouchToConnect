@@ -27,14 +27,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.rey.material.widget.EditText;
-import com.rey.material.widget.FloatingActionButton;
 import com.soundcloud.android.crop.Crop;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -54,6 +51,8 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     public static final String CARD_DEFAULT_DATA = "N:;New Contact;;;\n";
 
     public static final String PHOTO_FILE = "touch-connect-photo";
+
+    public static final  int profileImageSize = 128;
 
     private EditText mNameInput;
     private EditText mNumberInput;
@@ -153,27 +152,6 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         }
     }
 
-    private String encodeSavedUriTobase64()
-    {
-        if(!mPref.contains(PREF_PHOTO_URI)) return "";
-        String uriString = mPref.getString(PREF_PHOTO_URI, "");
-        if(uriString == null || uriString.isEmpty()) return "";
-
-        Uri imageUri = Uri.parse(uriString);
-
-        Bitmap image = null;
-        try {
-            image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] b = baos.toByteArray();
-        return "PHOTO;ENCODING=BASE64;JPEG:" + Base64.encodeToString(b, Base64.DEFAULT) + "\n";
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent result) {
         if (requestCode == Crop.REQUEST_PICK && resultCode == RESULT_OK) {
@@ -198,10 +176,18 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     @Override
     public NdefMessage createNdefMessage(NfcEvent event) {
         byte[] uriField = generateContactCard().getBytes(Charset.forName("US-ASCII"));
+        Log.e("myid", "test0");
         byte[] payload = new byte[uriField.length + 1];
+        Log.e("myid", "test1");
         System.arraycopy(uriField, 0, payload, 1, uriField.length);
+        Log.e("myid", "test2");
         NdefRecord record = new NdefRecord(NdefRecord.TNF_MIME_MEDIA, "text/vcard".getBytes(), new byte[0], payload);
-        return new NdefMessage(new NdefRecord[] {record});
+        Log.e("myid", "test3");
+        NdefRecord[] ndefRecord = new NdefRecord[] {record};
+        Log.e("myid", "test4");
+        NdefMessage ndefMessage = new NdefMessage(ndefRecord);
+        Log.e("myid", "test5");
+        return ndefMessage;
     }
 
     @Override
@@ -210,7 +196,9 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     }
 
     private String generateContactCard() {
-        return CARD_PRE + generateContactCardData() + CARD_END;
+        String contactCard = CARD_PRE + generateContactCardData() + CARD_END;
+        Log.e("myid", "gotheretoo");
+        return contactCard;
     }
 
     private String generateContactCardData() {
@@ -218,8 +206,38 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         contactData = appendPrefToString(contactData, "TEL;CELL:", PREF_NUMBER, "\n");
         contactData = appendPrefToString(contactData, "EMAIL;HOME:", PREF_EMAIL, "\n");
         contactData += encodeSavedUriTobase64();
+        Log.e("myid", "gothere");
         if(contactData.isEmpty()) contactData = CARD_DEFAULT_DATA;
         return contactData;
+    }
+
+    private String encodeSavedUriTobase64()
+    {
+        if(!mPref.contains(PREF_PHOTO_URI)) return "";
+        String uriString = mPref.getString(PREF_PHOTO_URI, "");
+        if(uriString == null || uriString.isEmpty()) return "";
+
+        Uri imageUri = Uri.parse(uriString);
+
+        try {
+            Bitmap image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+            image = getScaledBitmap(image);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] b = baos.toByteArray();
+            String base64EncodedImage = Base64.encodeToString(b, Base64.DEFAULT);
+            Log.e("myid", base64EncodedImage);
+            return "PHOTO;ENCODING=BASE64;JPEG:".concat(base64EncodedImage).concat("\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    private Bitmap getScaledBitmap(Bitmap original) {
+        int originalSize = original.getWidth();
+        if(originalSize <= profileImageSize) return original;
+        return Bitmap.createScaledBitmap(original, profileImageSize, profileImageSize, false);
     }
 
     private String appendPrefToString(String text, String pre, String PREF_ID, String end) {
