@@ -27,6 +27,6 @@
         android:layout_height="fill_parent"
         android:orientation="vertical">
         <include layout="@layout/contact_info_selection"/>
-        <include layout="@layout/rate_and_share"/>
+        <!--<include layout="@layout/rate_and_share"/>-->
     </LinearLayout>
 </LinearLayout>
