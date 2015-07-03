@@ -20,7 +20,7 @@
             android:src="@drawable/profile_photo_default"
             material:border_width="2dp"
             material:border_color="@color/label_color"
-            android:layout_margin="10dp"
+            android:layout_marginTop="10dp"
             android:layout_gravity="center"/>
 
         <com.rey.material.widget.CheckBox
@@ -30,7 +30,9 @@
             android:layout_height="wrap_content"
             material:cbd_strokeColor="@color/label_color"
             material:cbd_boxSize="15sp"
-            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="center_horizontal"
             android:text="Use Picture"/>
 
         <LinearLayout
