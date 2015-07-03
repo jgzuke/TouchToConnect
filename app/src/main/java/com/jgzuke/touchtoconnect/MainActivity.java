@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -50,6 +51,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     public static final String PREF_PHOTO_URI = "touch-connect-photouri";
     public static final String PREF_PHOTO_QUALITY = "touch-connect-photo-quality";
     public static final String PREF_PHOTO_USE = "touch-connect-photo-use";
+    public static final String PREF_PHOTO_ORIENTATION = "touch-connect-photo-orientation";
 
     public static final int BEAM_COMPLETE = 1;
 
@@ -199,9 +201,20 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
             mProfilePhoto.setImageURI(null);
             mPhotoUri = Crop.getOutput(result);
             mProfilePhoto.setImageURI(mPhotoUri);
+            setRotatedImage();
             saveChanges();
         } else if (resultCode == Crop.RESULT_ERROR) {
             Toast.makeText(this, Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void setRotatedImage() {
+        try {
+            Bitmap image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mPhotoUri);
+            mProfilePhoto.setImageURI(null);
+            mProfilePhoto.setImageBitmap(getScaledBitmap(image));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -281,10 +294,11 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     }
 
     private Bitmap getScaledBitmap(Bitmap original) {
-        int originalSize = original.getWidth();
-        int imageSize = mPref.getInt(PREF_PHOTO_QUALITY, 128);
-        if(originalSize <= imageSize) return original;
-        return Bitmap.createScaledBitmap(original, imageSize, imageSize, false);
+        int orientation = mPref.getInt(PREF_PHOTO_ORIENTATION, 0);
+        int size = mPref.getInt(PREF_PHOTO_QUALITY, 96);
+        Matrix matrix = new Matrix();
+        matrix.postRotate(orientation);
+        return Bitmap.createBitmap(original, 0, 0, size, size, matrix, true);
     }
 
     private String appendPrefToString(String text, String pre, String PREF_ID, String end) {
