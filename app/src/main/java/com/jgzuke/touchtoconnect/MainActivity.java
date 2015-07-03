@@ -22,6 +22,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -82,7 +84,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         mNumberInput = (EditText) findViewById(R.id.number_input);
         mEmailInput = (EditText) findViewById(R.id.email_input);
 
-        //mProfilePhoto = (CircleImageView) findViewById(R.id.profile_image);
+        mProfilePhoto = (CircleImageView) findViewById(R.id.profile_image);
     }
 
     @Override
@@ -103,6 +105,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         int colorPrimary = mRes.getColor(R.color.label_color);
         restoreLastText();
 
+        mProfilePhoto.setVisibility(View.GONE);
         /*mProfilePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,6 +133,11 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         mEmailInput.addTextChangedListener(mTextWatcher);
 
         restoreLastText();
+
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.setStatusBarColor(mRes.getColor(R.color.status_color));
     }
 
     private void selectPhoto() {
