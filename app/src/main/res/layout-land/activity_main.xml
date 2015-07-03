@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity"
     android:orientation="horizontal"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
     android:id="@+id/full_layout">
 
     <LinearLayout
@@ -151,22 +153,20 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:padding="10dp">
-            <com.rey.material.widget.Button
+            <com.gc.materialdesign.views.ButtonRectangle
+                android:id="@+id/rate_btn"
                 android:layout_width="0dp"
                 android:layout_weight="1"
+                android:layout_height="50dp"
                 android:background="@color/label_color"
-                android:textColor="#ffffff"
-                android:layout_height="wrap_content"
-                android:text="RATE"
-                material:rd_enable="true"/>
-            <com.rey.material.widget.Button
+                android:text="RATE" />
+            <com.gc.materialdesign.views.ButtonRectangle
+                android:id="@+id/share_btn"
                 android:layout_width="0dp"
                 android:layout_weight="1"
+                android:layout_height="50dp"
                 android:background="@color/label_color"
-                android:textColor="#ffffff"
-                android:layout_height="wrap_content"
-                android:text="SHARE"
-                material:rd_enable="true"/>
+                android:text="SHARE" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

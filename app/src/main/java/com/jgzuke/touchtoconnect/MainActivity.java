@@ -80,6 +80,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
             }
         });
 
+        int colorPrimary = mRes.getColor(R.color.label_color);
         restoreLastText();
 
         mTextWatcher = new TextWatcher() {
@@ -93,9 +94,9 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
             }
         };
 
-        setImageViewColor(R.id.name_input_icon, mRes.getColor(R.color.label_color));
-        setImageViewColor(R.id.number_input_icon, mRes.getColor(R.color.label_color));
-        setImageViewColor(R.id.email_input_icon, mRes.getColor(R.color.label_color));
+        setImageViewColor(R.id.name_input_icon, colorPrimary);
+        setImageViewColor(R.id.number_input_icon, colorPrimary);
+        setImageViewColor(R.id.email_input_icon, colorPrimary);
 
         mNameInput.addTextChangedListener(mTextWatcher);
         mNumberInput.addTextChangedListener(mTextWatcher);
