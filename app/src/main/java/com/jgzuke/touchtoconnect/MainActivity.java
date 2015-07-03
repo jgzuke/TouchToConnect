@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -11,10 +12,13 @@ import android.nfc.NfcAdapter;
 import android.nfc.NfcEvent;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,7 +30,11 @@ import com.rey.material.widget.EditText;
 import com.rey.material.widget.FloatingActionButton;
 import com.soundcloud.android.crop.Crop;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -145,6 +153,27 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         }
     }
 
+    private String encodeSavedUriTobase64()
+    {
+        if(!mPref.contains(PREF_PHOTO_URI)) return "";
+        String uriString = mPref.getString(PREF_PHOTO_URI, "");
+        if(uriString == null || uriString.isEmpty()) return "";
+
+        Uri imageUri = Uri.parse(uriString);
+
+        Bitmap image = null;
+        try {
+            image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] b = baos.toByteArray();
+        return "PHOTO;ENCODING=BASE64;JPEG:" + Base64.encodeToString(b, Base64.DEFAULT) + "\n";
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent result) {
         if (requestCode == Crop.REQUEST_PICK && resultCode == RESULT_OK) {
@@ -188,6 +217,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         String contactData = appendPrefToString("", "N:;", PREF_NAME, ";;;\n");
         contactData = appendPrefToString(contactData, "TEL;CELL:", PREF_NUMBER, "\n");
         contactData = appendPrefToString(contactData, "EMAIL;HOME:", PREF_EMAIL, "\n");
+        contactData += encodeSavedUriTobase64();
         if(contactData.isEmpty()) contactData = CARD_DEFAULT_DATA;
         return contactData;
     }
