@@ -82,7 +82,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         mNumberInput = (EditText) findViewById(R.id.number_input);
         mEmailInput = (EditText) findViewById(R.id.email_input);
 
-        mProfilePhoto = (CircleImageView) findViewById(R.id.profile_image);
+        //mProfilePhoto = (CircleImageView) findViewById(R.id.profile_image);
     }
 
     @Override
@@ -103,12 +103,12 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         int colorPrimary = mRes.getColor(R.color.label_color);
         restoreLastText();
 
-        mProfilePhoto.setOnClickListener(new View.OnClickListener() {
+        /*mProfilePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectPhoto();
             }
-        });
+        });*/
 
         mTextWatcher = new TextWatcher() {
             @Override
@@ -251,10 +251,10 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         setTextByPref(mNameInput, PREF_NAME);
         setTextByPref(mNumberInput, PREF_NUMBER);
         setTextByPref(mEmailInput, PREF_EMAIL);
-        if(mPref.contains(PREF_PHOTO_URI)) {
+        /*if(mPref.contains(PREF_PHOTO_URI)) {
             mPhotoUri = Uri.parse(mPref.getString(PREF_PHOTO_URI, ""));
             mProfilePhoto.setImageURI(mPhotoUri);
-        }
+        }*/
     }
 
     private void setTextByPref(EditText textView, String PrefID) {
@@ -266,9 +266,9 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         editPref.putString(PREF_NAME, mNameInput.getText().toString());
         editPref.putString(PREF_NUMBER, mNumberInput.getText().toString());
         editPref.putString(PREF_EMAIL, mEmailInput.getText().toString());
-        if(mPhotoUri != null) {
+        /*if(mPhotoUri != null) {
             editPref.putString(PREF_PHOTO_URI, mPhotoUri.toString());
-        }
+        }*/
         editPref.commit();
     }
 
