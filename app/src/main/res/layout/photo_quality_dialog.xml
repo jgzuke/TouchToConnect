@@ -8,21 +8,21 @@
         android:id="@+id/quality_low"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/hint_color"
+        android:background="@color/label_color"
         android:layout_gravity="center"
         android:text="LOW" />
     <com.gc.materialdesign.views.ButtonFlat
         android:id="@+id/quality_medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/hint_color"
+        android:background="@color/label_color"
         android:layout_gravity="center"
         android:text="MEDIUM" />
     <com.gc.materialdesign.views.ButtonFlat
         android:id="@+id/quality_high"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/hint_color"
+        android:background="@color/label_color"
         android:layout_gravity="center"
         android:text="HIGH" />
     <TextView

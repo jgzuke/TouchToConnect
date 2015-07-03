@@ -25,9 +25,11 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.rey.material.widget.CheckBox;
 import com.rey.material.widget.EditText;
 import com.soundcloud.android.crop.Crop;
 
@@ -46,7 +48,8 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     public static final String PREF_NUMBER = "touch-connect-number";
     public static final String PREF_EMAIL = "touch-connect-email";
     public static final String PREF_PHOTO_URI = "touch-connect-photouri";
-    public static final String PREF_PHOTO_QUALITY = "touch-connect-photo_quality";
+    public static final String PREF_PHOTO_QUALITY = "touch-connect-photo-quality";
+    public static final String PREF_PHOTO_USE = "touch-connect-photo-use";
 
     public static final int BEAM_COMPLETE = 1;
 
@@ -60,6 +63,8 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     private EditText mNumberInput;
     private EditText mEmailInput;
     private CircleImageView mProfilePhoto;
+    private CheckBox mCheckPicture;
+    private MaterialDialog mMaterialDialog;
 
     private Uri mPhotoUri;
 
@@ -85,6 +90,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         mEmailInput = (EditText) findViewById(R.id.email_input);
 
         mProfilePhoto = (CircleImageView) findViewById(R.id.profile_image);
+        mCheckPicture = (CheckBox) findViewById(R.id.use_picture);
     }
 
     @Override
@@ -131,6 +137,13 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         mNumberInput.addTextChangedListener(mTextWatcher);
         mEmailInput.addTextChangedListener(mTextWatcher);
 
+        mCheckPicture.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                saveChanges();
+            }
+        });
+
         restoreLastText();
 
         if(Build.VERSION.SDK_INT >= 21) {
@@ -144,31 +157,25 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     private void selectPhotoDialog() {
         View dialogView = getLayoutInflater().inflate(R.layout.photo_quality_dialog, null);
 
-        final MaterialDialog mMaterialDialog = new MaterialDialog(this);
+        mMaterialDialog = new MaterialDialog(this);
         mMaterialDialog.setTitle("Photo Quality").setContentView(dialogView).show();
 
         dialogView.findViewById(R.id.quality_low).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setImageSize(96);
-                mMaterialDialog.dismiss();
-                selectPhoto();
+                setImageSizeAndContinue(96);
             }
         });
         dialogView.findViewById(R.id.quality_medium).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setImageSize(128);
-                mMaterialDialog.dismiss();
-                selectPhoto();
+                setImageSizeAndContinue(128);
             }
         });
         dialogView.findViewById(R.id.quality_high).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setImageSize(192);
-                mMaterialDialog.dismiss();
-                selectPhoto();
+                setImageSizeAndContinue(192);
             }
         });
     }
@@ -239,7 +246,9 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         String contactData = appendPrefToString("", "N:;", PREF_NAME, ";;;\n");
         contactData = appendPrefToString(contactData, "TEL;CELL:", PREF_NUMBER, "\n");
         contactData = appendPrefToString(contactData, "EMAIL;HOME:", PREF_EMAIL, "\n");
-        contactData += encodeSavedUriTobase64();
+        if(mPref.contains(PREF_PHOTO_USE) && mPref.getBoolean(PREF_PHOTO_USE, false)) {
+            contactData += encodeSavedUriTobase64();
+        }
         if(contactData.isEmpty()) contactData = CARD_DEFAULT_DATA;
         return contactData;
     }
@@ -288,16 +297,23 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
             mPhotoUri = Uri.parse(mPref.getString(PREF_PHOTO_URI, ""));
             mProfilePhoto.setImageURI(mPhotoUri);
         }
+        if(mPref.contains(PREF_PHOTO_USE)) {
+            mCheckPicture.setChecked(mPref.getBoolean(PREF_PHOTO_USE, false));
+        }
     }
 
     private void setTextByPref(EditText textView, String PrefID) {
         if(mPref.contains(PrefID)) textView.setText(mPref.getString(PrefID, ""));
     }
 
-    private void setImageSize(int newImageSize) {
+    private void setImageSizeAndContinue(int newImageSize) {
         SharedPreferences.Editor editPref = mPref.edit();
         editPref.putInt(PREF_PHOTO_QUALITY, newImageSize);
         editPref.commit();
+
+        mMaterialDialog.dismiss();
+        mCheckPicture.setChecked(true);
+        selectPhoto();
     }
 
     private void saveChanges() {
@@ -308,6 +324,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         if(mPhotoUri != null) {
             editPref.putString(PREF_PHOTO_URI, mPhotoUri.toString());
         }
+        editPref.putBoolean(PREF_PHOTO_USE, mCheckPicture.isChecked());
         editPref.commit();
     }
 
