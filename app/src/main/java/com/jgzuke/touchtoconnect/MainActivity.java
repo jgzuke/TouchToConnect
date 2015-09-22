@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -200,7 +203,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         if (resultCode == RESULT_OK) {
             mProfilePhoto.setImageURI(null);
             mPhotoUri = Crop.getOutput(result);
-            mProfilePhoto.setImageURI(mPhotoUri);
+            loadPhoto();
             saveChanges();
         } else if (resultCode == Crop.RESULT_ERROR) {
             Toast.makeText(this, Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();
@@ -303,7 +306,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         setTextByPref(mEmailInput, PREF_EMAIL);
         if(mPref.contains(PREF_PHOTO_URI)) {
             mPhotoUri = Uri.parse(mPref.getString(PREF_PHOTO_URI, ""));
-            mProfilePhoto.setImageURI(mPhotoUri);
+            loadPhoto();
         }
         if(mPref.contains(PREF_PHOTO_USE)) {
             mCheckPicture.setChecked(mPref.getBoolean(PREF_PHOTO_USE, false));
@@ -372,5 +375,67 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
 
     private void toast(int stringID) {
         Toast.makeText(this, mRes.getString(stringID), Toast.LENGTH_SHORT).show();
+    }
+
+    private void loadPhoto() {
+        mProfilePhoto.setImageBitmap(rotateBitmap(mPhotoUri.getPath()));
+    }
+
+    private static final int MAX_IMAGE_DIMENSION = 500;
+
+    /**
+     * Rotate a bitmap based on orientation metadata.
+     * src - image path
+     */
+    public static Bitmap rotateBitmap(String src) {
+        Bitmap bitmap = BitmapFactory.decodeFile(src);
+        try {
+            ExifInterface exif = new ExifInterface(src);
+            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+
+            Matrix matrix = new Matrix();
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                    matrix.setScale(-1, 1);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    matrix.setRotate(180);
+                    break;
+                case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                    matrix.setRotate(180);
+                    matrix.postScale(-1, 1);
+                    break;
+                case ExifInterface.ORIENTATION_TRANSPOSE:
+                    matrix.setRotate(90);
+                    matrix.postScale(-1, 1);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    matrix.setRotate(90);
+                    break;
+                case ExifInterface.ORIENTATION_TRANSVERSE:
+                    matrix.setRotate(-90);
+                    matrix.postScale(-1, 1);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    matrix.setRotate(-90);
+                    break;
+                case ExifInterface.ORIENTATION_NORMAL:
+                case ExifInterface.ORIENTATION_UNDEFINED:
+                default:
+                    return bitmap;
+            }
+
+            try {
+                Bitmap oriented = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                bitmap.recycle();
+                return oriented;
+            } catch (OutOfMemoryError e) {
+                e.printStackTrace();
+                return bitmap;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
     }
 }
