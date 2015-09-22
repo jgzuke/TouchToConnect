@@ -103,7 +103,7 @@
                 material:et_labelTextColor="@color/label_color"
 
                 material:et_supportMode="charCounter"
-                material:et_supportMaxChars="11"
+                material:et_supportMaxChars="12"
                 material:et_supportTextSize="14sp"
                 material:et_supportTextColor="@color/label_color"
                 material:et_supportTextErrorColor="@color/error_color"

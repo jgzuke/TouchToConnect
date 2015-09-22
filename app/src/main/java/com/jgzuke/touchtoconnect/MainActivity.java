@@ -1,6 +1,7 @@
 package com.jgzuke.touchtoconnect;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -16,6 +17,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
@@ -295,6 +297,7 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
     }
 
     private void restoreLastText() {
+        if(!mPref.contains(PREF_NAME)) loadStartData();
         setTextByPref(mNameInput, PREF_NAME);
         setTextByPref(mNumberInput, PREF_NUMBER);
         setTextByPref(mEmailInput, PREF_EMAIL);
@@ -305,6 +308,12 @@ public class MainActivity extends Activity implements NfcAdapter.CreateNdefMessa
         if(mPref.contains(PREF_PHOTO_USE)) {
             mCheckPicture.setChecked(mPref.getBoolean(PREF_PHOTO_USE, false));
         }
+    }
+
+    private void loadStartData() {
+        TelephonyManager tMgr = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+        mNumberInput.setText(tMgr.getLine1Number());
+        saveChanges();
     }
 
     private void setTextByPref(EditText textView, String PrefID) {
